@@ -188,6 +188,16 @@ const allModels: LLMModel[] = [
     inputPrice: 0.6,
     outputPrice: 2.2,
   },
+  {
+    id: 'zai-org/glm-5.1',
+    name: 'GLM 5.1',
+    icon: '/logo/models/zai.svg',
+    color: '#000',
+    group: 'GLM',
+    socialTag: 'GLM',
+    inputPrice: 1.4,
+    outputPrice: 4.4,
+  },
   // Minimax
   {
     id: 'minimax/minimax-m2.1',
@@ -202,6 +212,16 @@ const allModels: LLMModel[] = [
   {
     id: 'minimax/minimax-m2.5',
     name: 'Minimax M2.5',
+    icon: '/logo/models/minimax-color.svg',
+    color: '#F23F5D',
+    group: 'Minimax',
+    socialTag: 'Minimax',
+    inputPrice: 0.3,
+    outputPrice: 1.2,
+  },
+  {
+    id: 'minimax/minimax-m2.7',
+    name: 'Minimax M2.7',
     icon: '/logo/models/minimax-color.svg',
     color: '#F23F5D',
     group: 'Minimax',
@@ -240,6 +260,16 @@ const allModels: LLMModel[] = [
     inputPrice: 0.6,
     outputPrice: 3.0,
   },
+  {
+    id: 'moonshotai/kimi-k2.6',
+    name: 'Kimi K2.6',
+    icon: '/logo/models/kimi-color.svg',
+    color: '#000',
+    group: 'Kimi',
+    socialTag: 'Kimi',
+    inputPrice: 0.95,
+    outputPrice: 4.0,
+  },
   // Qwen
   {
     id: 'qwen/qwen3-coder-next',
@@ -271,6 +301,16 @@ const allModels: LLMModel[] = [
     socialTag: 'ChatGPT',
     inputPrice: 1.75,
     outputPrice: 14.0,
+  },
+  {
+    id: 'pa/gpt-5.4',
+    name: 'GPT 5.4',
+    icon: '/logo/models/openai.svg',
+    color: '#000',
+    group: 'GPT',
+    socialTag: 'ChatGPT',
+    inputPrice: 2.5,
+    outputPrice: 15.0,
   },
   {
     id: 'pa/gpt-5.1-codex',
@@ -337,6 +377,16 @@ const allModels: LLMModel[] = [
   {
     id: 'pa/gemini-3-pro-preview',
     name: 'Gemini 3 Pro',
+    icon: '/logo/models/gemini-color.svg',
+    color: '#FFF',
+    group: 'Gemini',
+    socialTag: 'Gemini',
+    inputPrice: 2.0,
+    outputPrice: 12.0,
+  },
+  {
+    id: 'pa/gemini-3.1-pro-preview',
+    name: 'Gemini 3.1 Pro',
     icon: '/logo/models/gemini-color.svg',
     color: '#FFF',
     group: 'Gemini',
@@ -412,18 +462,18 @@ const modelGroupConfigs: ModelGroupConfig[] = [
     group: 'Open Source',
     modelIds: [
       'deepseek/deepseek-v3.2',
-      'zai-org/glm-5',
-      'minimax/minimax-m2.5',
-      'moonshotai/kimi-k2.5',
+      'zai-org/glm-5.1',
+      'minimax/minimax-m2.7',
+      'moonshotai/kimi-k2.6',
       'qwen/qwen3.5-397b-a17b',
     ],
   },
   {
     group: 'Proprietary',
     modelIds: [
-      'pa/gpt-5.2',
+      'pa/gpt-5.4',
       'pa/claude-opus-4-6',
-      'pa/gemini-3-pro-preview',
+      'pa/gemini-3.1-pro-preview',
       'pa/grok-4-1-fast-reasoning',
     ],
   },
@@ -467,7 +517,7 @@ export const modelGroups: ModelGroup[] = modelGroupConfigs.map(config => ({
 export const models: LLMModel[] = allModels
 
 export const defaultModelAId = 'pa/claude-opus-4-6'
-export const defaultModelBId = 'qwen/qwen3.5-397b-a17b'
+export const defaultModelBId = 'moonshotai/kimi-k2.6'
 
 export function getModelById(modelId: string): LLMModel | undefined {
   return models.find(m => m.id === modelId)

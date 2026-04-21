@@ -208,7 +208,7 @@ export function ArenaBattleModal({ open, onOpenChange }: ArenaBattleModalProps) 
                         Use Arena
                       </h4>
                       <p className="text-xs/4 text-[#99a1af]">
-                        Compare at least 2 models (e.g. GLM 5.0 vs Claude Opus 4.6)
+                        Compare at least 2 models (e.g. GLM 5.1 vs Claude Opus 4.6)
                       </p>
                     </div>
                   </div>
