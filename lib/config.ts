@@ -291,6 +291,17 @@ const allModels: LLMModel[] = [
     inputPrice: 0.6,
     outputPrice: 3.6,
   },
+  // Ling
+  {
+    id: 'inclusionai/ling-2.6-1t',
+    name: 'Ling 2.6 1T',
+    icon: '/logo/models/antgroup-color.svg',
+    color: '#1677FF',
+    group: 'Ling',
+    socialTag: 'Ling',
+    inputPrice: 0,
+    outputPrice: 0,
+  },
   // GPT
   {
     id: 'pa/gpt-5.2',
@@ -466,6 +477,7 @@ const modelGroupConfigs: ModelGroupConfig[] = [
       'minimax/minimax-m2.7',
       'moonshotai/kimi-k2.6',
       'qwen/qwen3.5-397b-a17b',
+      'inclusionai/ling-2.6-1t',
     ],
   },
   {
