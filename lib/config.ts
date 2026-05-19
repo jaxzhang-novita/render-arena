@@ -138,6 +138,16 @@ export type LLMModel = {
 const allModels: LLMModel[] = [
   // DeepSeek
   {
+    id: 'deepseek/deepseek-v4-pro',
+    name: 'DeepSeek V4 Pro',
+    icon: '/logo/models/deepseek-color.svg',
+    color: '#4D6BFE',
+    group: 'DeepSeek',
+    socialTag: 'DeepSeek',
+    inputPrice: 1.67,
+    outputPrice: 3.38,
+  },
+  {
     id: 'deepseek/deepseek-v3.2',
     name: 'DeepSeek V3.2',
     icon: '/logo/models/deepseek-color.svg',
@@ -472,6 +482,7 @@ const modelGroupConfigs: ModelGroupConfig[] = [
   {
     group: 'Open Source',
     modelIds: [
+      'deepseek/deepseek-v4-pro',
       'deepseek/deepseek-v3.2',
       'zai-org/glm-5.1',
       'minimax/minimax-m2.7',
