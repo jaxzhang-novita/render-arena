@@ -138,6 +138,16 @@ export type LLMModel = {
 const allModels: LLMModel[] = [
   // DeepSeek
   {
+    id: 'deepseek/deepseek-v4-pro',
+    name: 'DeepSeek V4 Pro',
+    icon: '/logo/models/deepseek-color.svg',
+    color: '#4D6BFE',
+    group: 'DeepSeek',
+    socialTag: 'DeepSeek',
+    inputPrice: 1.67,
+    outputPrice: 3.38,
+  },
+  {
     id: 'deepseek/deepseek-v3.2',
     name: 'DeepSeek V3.2',
     icon: '/logo/models/deepseek-color.svg',
@@ -301,6 +311,17 @@ const allModels: LLMModel[] = [
     socialTag: 'Ling',
     inputPrice: 0,
     outputPrice: 0,
+  },
+  // Xiaomi MiMo
+  {
+    id: 'xiaomimimo/mimo-v2.5-pro',
+    name: 'MiMo V2.5 Pro',
+    icon: '/logo/models/xiaomimimo.svg',
+    color: '#FF6900',
+    group: 'Xiaomi MiMo',
+    socialTag: 'MiMo',
+    inputPrice: 2.0,
+    outputPrice: 6.0,
   },
   // GPT
   {
@@ -472,7 +493,7 @@ const modelGroupConfigs: ModelGroupConfig[] = [
   {
     group: 'Open Source',
     modelIds: [
-      'deepseek/deepseek-v3.2',
+      'deepseek/deepseek-v4-pro',
       'zai-org/glm-5.1',
       'minimax/minimax-m2.7',
       'moonshotai/kimi-k2.6',
@@ -487,6 +508,7 @@ const modelGroupConfigs: ModelGroupConfig[] = [
       'pa/claude-opus-4-6',
       'pa/gemini-3.1-pro-preview',
       'pa/grok-4-1-fast-reasoning',
+      'xiaomimimo/mimo-v2.5-pro',
     ],
   },
 ]
