@@ -138,6 +138,16 @@ export type LLMModel = {
 const allModels: LLMModel[] = [
   // DeepSeek
   {
+    id: 'deepseek/deepseek-v4-pro',
+    name: 'DeepSeek V4 Pro',
+    icon: '/logo/models/deepseek-color.svg',
+    color: '#4D6BFE',
+    group: 'DeepSeek',
+    socialTag: 'DeepSeek',
+    inputPrice: 1.6,
+    outputPrice: 3.2,
+  },
+  {
     id: 'deepseek/deepseek-v3.2',
     name: 'DeepSeek V3.2',
     icon: '/logo/models/deepseek-color.svg',
@@ -195,10 +205,20 @@ const allModels: LLMModel[] = [
     color: '#000',
     group: 'GLM',
     socialTag: 'GLM',
-    inputPrice: 1.4,
+    inputPrice: 1.38,
     outputPrice: 4.4,
   },
   // Minimax
+  {
+    id: 'minimax/minimax-m3',
+    name: 'Minimax M3',
+    icon: '/logo/models/minimax-color.svg',
+    color: '#F23F5D',
+    group: 'Minimax',
+    socialTag: 'Minimax',
+    inputPrice: 0.3,
+    outputPrice: 1.2,
+  },
   {
     id: 'minimax/minimax-m2.1',
     name: 'Minimax M2.1',
@@ -267,10 +287,20 @@ const allModels: LLMModel[] = [
     color: '#000',
     group: 'Kimi',
     socialTag: 'Kimi',
-    inputPrice: 0.95,
-    outputPrice: 4.0,
+    inputPrice: 0.8,
+    outputPrice: 3.4,
   },
   // Qwen
+  {
+    id: 'qwen/qwen3.7-max',
+    name: 'Qwen3.7 Max',
+    icon: '/logo/models/qwen-color.svg',
+    color: '#615CED',
+    group: 'Qwen',
+    socialTag: 'Qwen',
+    inputPrice: 1.25,
+    outputPrice: 3.75,
+  },
   {
     id: 'qwen/qwen3-coder-next',
     name: 'Qwen3 Coder Next',
@@ -291,7 +321,17 @@ const allModels: LLMModel[] = [
     inputPrice: 0.6,
     outputPrice: 3.6,
   },
-  // Ling
+  // InclusionAI
+  {
+    id: 'inclusionai/ring-2.6-1t',
+    name: 'Ring 2.6 1T',
+    icon: '/logo/models/antgroup-color.svg',
+    color: '#1677FF',
+    group: 'InclusionAI',
+    socialTag: 'Ring',
+    inputPrice: 0.3,
+    outputPrice: 2.5,
+  },
   {
     id: 'inclusionai/ling-2.6-1t',
     name: 'Ling 2.6 1T',
@@ -301,6 +341,17 @@ const allModels: LLMModel[] = [
     socialTag: 'Ling',
     inputPrice: 0,
     outputPrice: 0,
+  },
+  // Xiaomi MiMo
+  {
+    id: 'xiaomimimo/mimo-v2.5-pro',
+    name: 'MiMo V2.5 Pro',
+    icon: '/logo/models/xiaomi-color.svg',
+    color: '#FF6900',
+    group: 'Xiaomi',
+    socialTag: 'MiMo',
+    inputPrice: 0.522,
+    outputPrice: 1.044,
   },
   // GPT
   {
@@ -472,12 +523,13 @@ const modelGroupConfigs: ModelGroupConfig[] = [
   {
     group: 'Open Source',
     modelIds: [
-      'deepseek/deepseek-v3.2',
+      'deepseek/deepseek-v4-pro',
       'zai-org/glm-5.1',
-      'minimax/minimax-m2.7',
+      'minimax/minimax-m3',
       'moonshotai/kimi-k2.6',
-      'qwen/qwen3.5-397b-a17b',
-      'inclusionai/ling-2.6-1t',
+      'qwen/qwen3.7-max',
+      'inclusionai/ring-2.6-1t',
+      'xiaomimimo/mimo-v2.5-pro',
     ],
   },
   {
