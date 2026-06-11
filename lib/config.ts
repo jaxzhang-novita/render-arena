@@ -355,6 +355,16 @@ const allModels: LLMModel[] = [
   },
   // GPT
   {
+    id: 'pa/gpt-5.5',
+    name: 'GPT 5.5',
+    icon: '/logo/models/openai.svg',
+    color: '#000',
+    group: 'GPT',
+    socialTag: 'ChatGPT',
+    inputPrice: 2.5,
+    outputPrice: 15.0,
+  },
+  {
     id: 'pa/gpt-5.2',
     name: 'GPT 5.2',
     icon: '/logo/models/openai.svg',
@@ -395,6 +405,16 @@ const allModels: LLMModel[] = [
     outputPrice: 8.0,
   },
   // Claude
+  {
+    id: 'pa/claude-opus-4-8',
+    name: 'Claude Opus 4.8',
+    icon: '/logo/models/claude-color.svg',
+    color: '#D97757',
+    group: 'Claude',
+    socialTag: 'Claude',
+    inputPrice: 5.0,
+    outputPrice: 25.0,
+  },
   {
     id: 'pa/claude-opus-4-6',
     name: 'Claude Opus 4.6',
@@ -437,6 +457,16 @@ const allModels: LLMModel[] = [
   },
   // Gemini
   {
+    id: 'pa/gemini-3.5-flash',
+    name: 'Gemini 3.5 Flash',
+    icon: '/logo/models/gemini-color.svg',
+    color: '#FFF',
+    group: 'Gemini',
+    socialTag: 'Gemini',
+    inputPrice: 0.5,
+    outputPrice: 3.0,
+  },
+  {
     id: 'pa/gemini-3-pro-preview',
     name: 'Gemini 3 Pro',
     icon: '/logo/models/gemini-color.svg',
@@ -467,6 +497,16 @@ const allModels: LLMModel[] = [
     outputPrice: 3.0,
   },
   // Grok
+  {
+    id: 'pa/grok-4.20-0309-reasoning',
+    name: 'Grok 4.20 Reasoning',
+    icon: '/logo/models/grok.svg',
+    color: '#000',
+    group: 'Grok',
+    socialTag: 'Grok',
+    inputPrice: 0.2,
+    outputPrice: 0.5,
+  },
   {
     id: 'pa/grok-4-1-fast-reasoning',
     name: 'Grok 4.1 Fast Reasoning',
@@ -535,10 +575,10 @@ const modelGroupConfigs: ModelGroupConfig[] = [
   {
     group: 'Proprietary',
     modelIds: [
-      'pa/gpt-5.4',
-      'pa/claude-opus-4-6',
-      'pa/gemini-3.1-pro-preview',
-      'pa/grok-4-1-fast-reasoning',
+      'pa/gpt-5.5',
+      'pa/claude-opus-4-8',
+      'pa/gemini-3.5-flash',
+      'pa/grok-4.20-0309-reasoning',
     ],
   },
 ]
