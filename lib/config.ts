@@ -208,6 +208,16 @@ const allModels: LLMModel[] = [
     inputPrice: 1.38,
     outputPrice: 4.4,
   },
+  {
+    id: 'zai-org/glm-5.2',
+    name: 'GLM 5.2',
+    icon: '/logo/models/zai.svg',
+    color: '#000',
+    group: 'GLM',
+    socialTag: 'GLM',
+    inputPrice: 1.4,
+    outputPrice: 4.4,
+  },
   // Minimax
   {
     id: 'minimax/minimax-m3',
@@ -565,6 +575,7 @@ const modelGroupConfigs: ModelGroupConfig[] = [
     modelIds: [
       'deepseek/deepseek-v4-pro',
       'zai-org/glm-5.1',
+      'zai-org/glm-5.2',
       'minimax/minimax-m3',
       'moonshotai/kimi-k2.6',
       'qwen/qwen3.7-max',
