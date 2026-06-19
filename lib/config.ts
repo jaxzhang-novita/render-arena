@@ -208,6 +208,16 @@ const allModels: LLMModel[] = [
     inputPrice: 1.38,
     outputPrice: 4.4,
   },
+  {
+    id: 'zai-org/glm-5.2',
+    name: 'GLM 5.2',
+    icon: '/logo/models/zai.svg',
+    color: '#000',
+    group: 'GLM',
+    socialTag: 'GLM',
+    inputPrice: 1.4,
+    outputPrice: 4.4,
+  },
   // Minimax
   {
     id: 'minimax/minimax-m3',
@@ -564,7 +574,7 @@ const modelGroupConfigs: ModelGroupConfig[] = [
     group: 'Open Source',
     modelIds: [
       'deepseek/deepseek-v4-pro',
-      'zai-org/glm-5.1',
+      'zai-org/glm-5.2',
       'minimax/minimax-m3',
       'moonshotai/kimi-k2.6',
       'qwen/qwen3.7-max',
@@ -701,6 +711,8 @@ export type APIConfig = {
   url: string
   apiKey: string
   modelId: string
+  requestOptions?: Record<string, unknown>
+  systemPromptSuffix?: string
 }
 
 /**
@@ -737,9 +749,20 @@ export function getAPIConfig(modelId: string): APIConfig {
   }
 
   // Default: use Novita API
+  const isGLM52 = modelId === 'zai-org/glm-5.2'
+
   return {
     url: NOVITA_API_URL,
     apiKey: NOVITA_API_KEY,
     modelId: modelId,
+    requestOptions: isGLM52
+      ? {
+          thinking: { type: 'disabled' },
+          enable_thinking: false,
+        }
+      : undefined,
+    systemPromptSuffix: isGLM52
+      ? ' Start immediately with <!DOCTYPE html>. Output only one complete HTML document. No explanations, no markdown fences, no planning text. Keep the implementation compact and complete.'
+      : undefined,
   }
 }
