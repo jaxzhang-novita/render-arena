@@ -17,6 +17,9 @@ import * as Sentry from '@sentry/nextjs'
 // This is a streaming endpoint, so we need edge-compatible settings
 export const runtime = 'nodejs' // Use Node.js runtime for Supabase and streaming
 export const dynamic = 'force-dynamic' // Always fresh data, no caching for generation requests
+export const maxDuration = 900
+
+const GENERATION_MAX_TOKENS = 65536
 
 function getClientIP(request: NextRequest): string {
   const headersList = request.headers
@@ -233,7 +236,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     attributes: {
       'gen_ai.request.model': modelId,
       'gen_ai.request.temperature': finalTemperature,
-      'gen_ai.request.max_tokens': 32000,
+      'gen_ai.request.max_tokens': GENERATION_MAX_TOKENS,
       'gen_ai.request.stream': true,
       'gen_ai.system': 'novita',
       'gen_ai.api.endpoint': apiConfig.url,
@@ -253,8 +256,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       model: apiConfig.modelId,
       messages,
       temperature: finalTemperature,
-      max_tokens: 32000,
+      max_tokens: GENERATION_MAX_TOKENS,
       stream: true,
+      thinking: { type: 'disabled' },
       // separate_reasoning: true,
     }),
     signal: abortController.signal,
