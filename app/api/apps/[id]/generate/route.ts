@@ -222,7 +222,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const messages = [
     {
       role: 'system',
-      content: `You are an expert web developer. Generate a self-contained HTML file based on the user's prompt. The HTML will run in a sandboxed iframe (allow-scripts, allow-forms). Do not use localStorage, sessionStorage, or cookies.${apiConfig.systemPromptSuffix ?? ''}`,
+      content: `You are an expert web developer. Generate a self-contained HTML file based on the user's prompt. The HTML will run in a sandboxed iframe (allow-scripts, allow-forms). Do not use localStorage, sessionStorage, or cookies.`,
     },
     { role: 'user', content: app.prompt },
   ]
@@ -255,7 +255,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       temperature: finalTemperature,
       max_tokens: 32000,
       stream: true,
-      ...apiConfig.requestOptions,
       // separate_reasoning: true,
     }),
     signal: abortController.signal,
