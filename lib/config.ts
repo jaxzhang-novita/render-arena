@@ -465,6 +465,16 @@ const allModels: LLMModel[] = [
     inputPrice: 0.5,
     outputPrice: 2.5,
   },
+  {
+    id: 'pa/claude-fable-5',
+    name: 'Claude Fable 5',
+    icon: '/logo/models/claude-color.svg',
+    color: '#D97757',
+    group: 'Claude',
+    socialTag: 'Claude',
+    inputPrice: 10,
+    outputPrice: 50,
+  },
   // Gemini
   {
     id: 'pa/gemini-3.5-flash',
@@ -586,9 +596,9 @@ const modelGroupConfigs: ModelGroupConfig[] = [
     group: 'Proprietary',
     modelIds: [
       'pa/gpt-5.5',
-      'pa/claude-opus-4-8',
       'pa/gemini-3.5-flash',
       'pa/grok-4.20-0309-reasoning',
+      'pa/claude-fable-5',
     ],
   },
 ]
@@ -631,7 +641,7 @@ export const modelGroups: ModelGroup[] = modelGroupConfigs.map(config => ({
 export const models: LLMModel[] = allModels
 
 export const defaultModelAId = 'xiaomimimo/mimo-v2.5-pro'
-export const defaultModelBId = 'pa/claude-opus-4-8'
+export const defaultModelBId = 'pa/claude-fable-5'
 
 export function getModelById(modelId: string): LLMModel | undefined {
   return models.find(m => m.id === modelId)
