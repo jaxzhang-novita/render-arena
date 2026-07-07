@@ -568,6 +568,16 @@ const allModels: LLMModel[] = [
     inputPrice: 0.5,
     outputPrice: 1.5,
   },
+  {
+    id: 'tencent/hy3',
+    name: 'Hy3',
+    icon: '/logo/models/hunyuan-color.svg',
+    color: '#0055E9',
+    group: 'Hunyuan',
+    socialTag: 'Hunyuan',
+    inputPrice: 0,
+    outputPrice: 0,
+  },
 ]
 
 // Create a map for quick lookup
@@ -590,6 +600,7 @@ const modelGroupConfigs: ModelGroupConfig[] = [
       'qwen/qwen3.7-max',
       'inclusionai/ring-2.6-1t',
       'xiaomimimo/mimo-v2.5-pro',
+      'tencent/hy3',
     ],
   },
   {
