@@ -651,8 +651,8 @@ export const modelGroups: ModelGroup[] = modelGroupConfigs.map(config => ({
 // Export all models for backward compatibility
 export const models: LLMModel[] = allModels
 
-export const defaultModelAId = 'xiaomimimo/mimo-v2.5-pro'
-export const defaultModelBId = 'pa/claude-fable-5'
+export const defaultModelAId = 'tencent/hy3'
+export const defaultModelBId = 'pa/gpt-5.5'
 
 export function getModelById(modelId: string): LLMModel | undefined {
   return models.find(m => m.id === modelId)
