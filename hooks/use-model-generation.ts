@@ -254,7 +254,6 @@ export function useModelGeneration({
           },
           body: JSON.stringify({
             slot,
-            model: selectedModel.id,
             temperature: settings.temperature,
           }),
           openWhenHidden: true,
@@ -333,25 +332,6 @@ export function useModelGeneration({
                 setViewMode('preview')
               }
 
-              // 保存 HTML 到数据库
-              if (html) {
-                const fieldName = slot === 'a' ? 'html_content_a' : 'html_content_b'
-                const durationField = slot === 'a' ? 'duration_a' : 'duration_b'
-                const tokensField = slot === 'a' ? 'tokens_a' : 'tokens_b'
-
-                fetch(`/api/apps/${appId}`, {
-                  method: 'PATCH',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    [fieldName]: html,
-                    [durationField]: duration,
-                    [tokensField]: tokens,
-                  }),
-                }).catch(err => {
-                  console.error(`Failed to save HTML for model ${slot}:`, err)
-                })
-              }
-
               // 通知生成完成
               onGenerationComplete?.(html || undefined)
 
@@ -415,7 +395,7 @@ export function useModelGeneration({
         }))
       }
     },
-    [stop, flushBuffer, slot, selectedModel.id, settings.temperature, onGenerationComplete]
+    [stop, flushBuffer, slot, settings.temperature, onGenerationComplete]
   )
 
   return {

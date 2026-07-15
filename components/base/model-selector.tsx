@@ -17,6 +17,8 @@ interface ModelSelectorProps {
   size?: 'small' | 'medium'
   /** Additional CSS classes */
   className?: string
+  /** Prevent changing the model after generation starts */
+  disabled?: boolean
 }
 
 export function ModelSelector({
@@ -25,6 +27,7 @@ export function ModelSelector({
   variant = 'default',
   size = 'medium',
   className,
+  disabled = false,
 }: ModelSelectorProps) {
   // Size configurations
   const sizeConfig = {
@@ -48,10 +51,12 @@ export function ModelSelector({
     <div suppressHydrationWarning>
       <Menu.Root>
         <Menu.Trigger
+          disabled={disabled}
           className={cn(
             'inline-flex items-center justify-center rounded-lg text-sm font-medium whitespace-nowrap transition-colors',
             config.triggerHeight,
-            'cursor-pointer gap-2',
+            disabled ? 'cursor-not-allowed opacity-65' : 'cursor-pointer',
+            'gap-2',
             config.padding,
             variant === 'minimal'
               ? 'hover:bg-[#F5F5F5]' // Minimal: no background, hover only

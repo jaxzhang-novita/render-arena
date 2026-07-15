@@ -2,7 +2,8 @@ import { useState, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useModelGeneration } from './use-model-generation'
 import type { App } from '@/types'
-import { defaultModelAId, defaultModelBId } from '@/lib/config'
+import { defaultModelAId, type LLMModel } from '@/lib/config'
+import { getAgentHarness, type AgentHarness } from '@/lib/agent-comparison'
 import { showToast } from '@/lib/toast'
 import { trackGenerationStarted } from '@/lib/analytics'
 
@@ -23,6 +24,16 @@ interface UseArenaPlaygroundReturn {
   prompt: string
   /** 设置提示词 */
   setPrompt: (prompt: string) => void
+  /** 两侧共享的模型 */
+  selectedModel: LLMModel
+  /** 同步设置两侧模型 */
+  setSelectedModel: (model: LLMModel) => void
+  /** Agent 侧展示的 harness */
+  agentHarness: AgentHarness
+  /** 设置 Agent harness */
+  setAgentHarness: (harness: AgentHarness) => void
+  /** 生成开始后锁定演示配置 */
+  isConfigurationLocked: boolean
 
   // 视图状态
   /** Arena 视图模式 (a/b/split) */
@@ -67,36 +78,50 @@ export function useArenaPlayground({
   const searchParams = useSearchParams()
   const urlPrompt = searchParams.get('prompt')
   const urlCategory = searchParams.get('category') || ''
-  const urlModelA = searchParams.get('modelA')
-  const urlModelB = searchParams.get('modelB')
+  const urlModel = searchParams.get('model')
+  const urlHarness = searchParams.get('harness')
   const urlTitle = searchParams.get('title')
   const [currentAppId, setCurrentAppId] = useState<string | undefined>(appId)
   const [prompt, setPrompt] = useState(initialApp?.prompt || urlPrompt || '')
   const [category] = useState(initialApp?.category || urlCategory || 'general')
+  const [agentHarness, setAgentHarness] = useState(() => getAgentHarness(urlHarness))
 
   // 视图状态
   const [arenaViewMode, setArenaViewMode] = useState<ArenaViewMode>('split')
   const [showInputBar, setShowInputBar] = useState(true)
 
-  // Model A
+  const initialModelId = urlModel || initialApp?.model_a
+
+  // Direct profile
   const modelA = useModelGeneration({
     slot: 'a',
-    initialModelId: urlModelA || initialApp?.model_a,
+    initialModelId,
     defaultModelId: defaultModelAId,
     initialHtml: initialApp?.html_content_a || undefined,
     initialDuration: initialApp?.duration_a || undefined,
     initialTokens: initialApp?.tokens_a || undefined,
   })
 
-  // Model B
+  // Agent profile uses the same model
   const modelB = useModelGeneration({
     slot: 'b',
-    initialModelId: urlModelB || initialApp?.model_b,
-    defaultModelId: defaultModelBId,
+    initialModelId,
+    defaultModelId: defaultModelAId,
     initialHtml: initialApp?.html_content_b || undefined,
     initialDuration: initialApp?.duration_b || undefined,
     initialTokens: initialApp?.tokens_b || undefined,
   })
+
+  const selectedModel = modelA.selectedModel
+  const setModelA = modelA.setSelectedModel
+  const setModelB = modelB.setSelectedModel
+  const setSelectedModel = useCallback(
+    (model: LLMModel) => {
+      setModelA(model)
+      setModelB(model)
+    },
+    [setModelA, setModelB]
+  )
 
   // 停止所有生成
   const stopAllGeneration = useCallback(() => {
@@ -112,8 +137,7 @@ export function useArenaPlayground({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: prompt.trim(),
-          modelA: modelA.selectedModel.id,
-          modelB: modelB.selectedModel.id,
+          model: selectedModel.id,
           category: category,
           name: urlTitle || undefined,
         }),
@@ -133,7 +157,7 @@ export function useArenaPlayground({
       showToast.error('Failed to create. Please try again later.')
       return null
     }
-  }, [prompt, category, modelA.selectedModel.id, modelB.selectedModel.id, urlTitle])
+  }, [prompt, category, selectedModel.id, urlTitle])
 
   // 同时生成两个模型
   const handleGenerate = useCallback(async () => {
@@ -152,12 +176,17 @@ export function useArenaPlayground({
     // 更新状态
     setCurrentAppId(newAppId)
 
-    // 使用 history.replaceState 更新 URL，不触发 Next.js 路由导航
-    window.history.replaceState(null, '', `/playground/${newAppId}`)
+    // Keep the experiment on the client-only route. Generated HTML is intentionally ephemeral.
+    const params = new URLSearchParams({
+      prompt: prompt.trim(),
+      model: selectedModel.id,
+      harness: agentHarness.id,
+    })
+    window.history.replaceState(null, '', `/playground/new?${params.toString()}`)
 
     // 并行生成两个模型
     await Promise.allSettled([modelA.generate(newAppId), modelB.generate(newAppId)])
-  }, [prompt, createApp, stopAllGeneration, modelA, modelB])
+  }, [prompt, createApp, stopAllGeneration, modelA, modelB, selectedModel.id, agentHarness.id])
 
   // 单独重新生成 Model A
   const handleGenerateModelA = useCallback(async () => {
@@ -184,6 +213,11 @@ export function useArenaPlayground({
     currentAppId,
     prompt,
     setPrompt,
+    selectedModel,
+    setSelectedModel,
+    agentHarness,
+    setAgentHarness,
+    isConfigurationLocked: Boolean(currentAppId) || modelA.isLoading || modelB.isLoading,
 
     // 视图状态
     arenaViewMode,

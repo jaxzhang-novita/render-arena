@@ -327,17 +327,6 @@ export default function GalleryClient({ app }: GalleryClientProps) {
                   {(app.duration_a || app.tokens_a) &&
                     (() => {
                       const { tokens, cost } = calculateTokensAndCost(app.tokens_a, app.model_a)
-                      const { cost: costB } = calculateTokensAndCost(app.tokens_b, app.model_b)
-
-                      // Calculate comparison ratios
-                      const costRatio = costB && cost && costB > 0 && cost > 0 ? costB / cost : null
-                      const durationRatio =
-                        app.duration_b && app.duration_a && app.duration_b > 0 && app.duration_a > 0
-                          ? app.duration_b / app.duration_a
-                          : null
-
-                      const isCostWinner = costRatio && costRatio > 1.1
-                      const isDurationWinner = durationRatio && durationRatio >= 1.5
 
                       return (
                         <div className="flex items-center gap-2">
@@ -346,15 +335,10 @@ export default function GalleryClient({ app }: GalleryClientProps) {
                             <Tooltip.Root>
                               <Tooltip.Trigger
                                 delay={100}
-                                className="inline-flex items-center gap-1 rounded-md bg-green-50 px-2 py-1 text-sm font-semibold text-green-700 ring-1 ring-green-700/10 ring-inset cursor-default hover:bg-green-100 transition-colors"
+                                className="inline-flex cursor-default items-center gap-1 rounded-md bg-green-50 px-2 py-1 text-sm font-semibold text-green-700 ring-1 ring-green-700/10 transition-colors ring-inset hover:bg-green-100"
                               >
                                 <DollarSign className="size-3.5" />
                                 <span>{cost.toFixed(4)}</span>
-                                {isCostWinner && costRatio && costRatio > 1.5 && (
-                                  <span className="ml-0.5 text-xs text-green-600">
-                                    {costRatio.toFixed(1)}x cheaper
-                                  </span>
-                                )}
                               </Tooltip.Trigger>
                               <Tooltip.Portal>
                                 <Tooltip.Positioner sideOffset={8}>
@@ -388,11 +372,6 @@ export default function GalleryClient({ app }: GalleryClientProps) {
                             <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-1 text-sm font-semibold text-blue-700 ring-1 ring-blue-700/10 ring-inset">
                               <Clock className="size-3.5" />
                               <span>{app.duration_a.toFixed(1)}s</span>
-                              {isDurationWinner && durationRatio && durationRatio > 1.5 && (
-                                <span className="ml-0.5 text-xs text-blue-600">
-                                  {durationRatio.toFixed(1)}x faster
-                                </span>
-                              )}
                             </span>
                           )}
 
@@ -453,17 +432,6 @@ export default function GalleryClient({ app }: GalleryClientProps) {
                   {(app.duration_b || app.tokens_b) &&
                     (() => {
                       const { tokens, cost } = calculateTokensAndCost(app.tokens_b, app.model_b)
-                      const { cost: costA } = calculateTokensAndCost(app.tokens_a, app.model_a)
-
-                      // Calculate comparison ratios
-                      const costRatio = costA && cost && costA > 0 && cost > 0 ? costA / cost : null
-                      const durationRatio =
-                        app.duration_a && app.duration_b && app.duration_a > 0 && app.duration_b > 0
-                          ? app.duration_a / app.duration_b
-                          : null
-
-                      const isCostWinner = costRatio && costRatio > 1.1
-                      const isDurationWinner = durationRatio && durationRatio >= 1.5
 
                       return (
                         <div className="flex items-center gap-2">
@@ -472,15 +440,10 @@ export default function GalleryClient({ app }: GalleryClientProps) {
                             <Tooltip.Root>
                               <Tooltip.Trigger
                                 delay={100}
-                                className="inline-flex items-center gap-1 rounded-md bg-green-50 px-2.5 py-1 text-sm font-semibold text-green-700 ring-1 ring-green-700/10 ring-inset cursor-default hover:bg-green-100 transition-colors"
+                                className="inline-flex cursor-default items-center gap-1 rounded-md bg-green-50 px-2.5 py-1 text-sm font-semibold text-green-700 ring-1 ring-green-700/10 transition-colors ring-inset hover:bg-green-100"
                               >
                                 <DollarSign className="size-3.5" />
                                 <span>{cost.toFixed(4)}</span>
-                                {isCostWinner && costRatio && costRatio > 1.5 && (
-                                  <span className="ml-0.5 text-xs text-green-600">
-                                    {costRatio.toFixed(1)}x cheaper
-                                  </span>
-                                )}
                               </Tooltip.Trigger>
                               <Tooltip.Portal>
                                 <Tooltip.Positioner sideOffset={8}>
@@ -514,11 +477,6 @@ export default function GalleryClient({ app }: GalleryClientProps) {
                             <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2.5 py-1 text-sm font-semibold text-blue-700 ring-1 ring-blue-700/10 ring-inset">
                               <Clock className="size-3.5" />
                               <span>{app.duration_b.toFixed(1)}s</span>
-                              {isDurationWinner && durationRatio && durationRatio > 1.5 && (
-                                <span className="ml-0.5 text-xs text-blue-600">
-                                  {durationRatio.toFixed(1)}x faster
-                                </span>
-                              )}
                             </span>
                           )}
 

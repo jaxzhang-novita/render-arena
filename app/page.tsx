@@ -8,7 +8,7 @@ import { GalleryGrid } from '@/components/app/gallery-grid'
 import { FreeTierBanner } from '@/components/app/overwhelming-banner'
 import { CodingPackageBanner } from '@/components/app/coding-package-banner'
 import { HackathonBanner } from '@/components/app/hackathon-banner'
-import { ArrowRight, ChevronUp } from 'lucide-react'
+import { ArrowRight, ChevronUp, MessageSquareText } from 'lucide-react'
 import { Accordion } from '@base-ui/react/accordion'
 
 import { useState, useEffect, useId, useRef } from 'react'
@@ -22,10 +22,11 @@ import {
   models,
   type LLMModel,
   defaultModelAId,
-  defaultModelBId,
   getModelById,
 } from '@/lib/config'
 import { ModelSelector } from '@/components/base/model-selector'
+import { HarnessSelector } from '@/components/base/harness-selector'
+import { defaultAgentHarnessId, getAgentHarness } from '@/lib/agent-comparison'
 
 export default function HomePage() {
   const router = useRouter()
@@ -42,11 +43,11 @@ export default function HomePage() {
   const STATIC_PLACEHOLDER = 'Enter a prompt to start the Arena battle.'
 
   // Model selection state
-  const [selectedModelA, setSelectedModelA] = useState<LLMModel>(
+  const [selectedModel, setSelectedModel] = useState<LLMModel>(
     getModelById(defaultModelAId) || models[0]
   )
-  const [selectedModelB, setSelectedModelB] = useState<LLMModel>(
-    getModelById(defaultModelBId) || models[1]
+  const [selectedHarness, setSelectedHarness] = useState(() =>
+    getAgentHarness(defaultAgentHarnessId)
   )
 
   // Generate stable IDs for accordion triggers
@@ -111,8 +112,8 @@ export default function HomePage() {
     // Navigate with all params
     const params = new URLSearchParams({
       prompt: promptToUse,
-      modelA: selectedModelA.id,
-      modelB: selectedModelB.id,
+      model: selectedModel.id,
+      harness: selectedHarness.id,
       autoStart: 'true',
     })
 
@@ -142,20 +143,18 @@ export default function HomePage() {
             <div className="inline-flex items-center gap-3 rounded-full border border-[#b9f8cf] bg-[#f0fdf4] px-3 py-1">
               <div className="size-2 rounded-full bg-[#00c950]" />
               <span className="font-['Inter',sans-serif] text-xs font-medium text-[#00a63e]">
-                RenderArena · Live Model Battles
+                RenderArena · Agent Comparison
               </span>
             </div>
 
             {/* Heading */}
-            <h1 className="max-w-[820px] font-sans text-[58px] leading-[64px] font-semibold tracking-[-1.6px] text-[#292827]">
-              <span>One Prompt</span>
-              <br />
-              <span>Multiple Models, Side by Side</span>
+            <h1 className="max-w-[820px] font-sans text-4xl leading-tight font-semibold tracking-normal text-[#292827] md:text-[58px] md:leading-[64px]">
+              One Model. Direct vs Agent.
             </h1>
 
             {/* Subtitle */}
             <p className="max-w-[820px] font-sans text-lg/6 font-normal text-[#4f4e4a]">
-              Test how different models render the same idea. Compare, judge, and share the results.
+              See how the same model performs with and without an agent harness.
             </p>
 
             {/* Featured Case */}
@@ -179,32 +178,33 @@ export default function HomePage() {
                         handleGenerate()
                       }
                     }}
-                    className="w-full h-[120px] resize-none bg-transparent font-sans text-base font-normal text-[#4f4e4a] outline-none placeholder:text-[#9e9c98]"
+                    className="h-[120px] w-full resize-none bg-transparent font-sans text-base font-normal text-[#4f4e4a] outline-none placeholder:text-[#9e9c98]"
                     spellCheck={false}
                   />
                 </div>
 
-                {/* Bottom Actions: Model Selectors and Run Arena Button */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
+                {/* Bottom Actions: shared model and execution profiles */}
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex min-w-0 flex-wrap items-center gap-2">
                     <ModelSelector
-                      selectedModel={selectedModelA}
-                      onModelChange={model => {
-                        setSelectedModelA(model)
-                      }}
+                      selectedModel={selectedModel}
+                      onModelChange={setSelectedModel}
                       variant="minimal"
                       size="small"
-                      className="w-[196px]"
+                      className="w-[190px] max-sm:w-full"
                     />
-                    <div className="h-[16px] w-px bg-[rgba(0,0,0,0.06)]" />
-                    <ModelSelector
-                      selectedModel={selectedModelB}
-                      onModelChange={model => {
-                        setSelectedModelB(model)
-                      }}
-                      variant="default"
+                    <div className="hidden h-4 w-px bg-black/10 sm:block" />
+                    <div className="inline-flex h-8 items-center gap-2 rounded-lg border border-[#e7e6e2] bg-[#f7f7f5] px-3 text-[14px] font-medium text-[#4f4e4a]">
+                      <MessageSquareText className="size-4" />
+                      Direct
+                    </div>
+                    <span className="px-0.5 text-xs font-medium text-[#9e9c98]">VS</span>
+                    <HarnessSelector
+                      selectedHarness={selectedHarness}
+                      onHarnessChange={setSelectedHarness}
                       size="small"
-                      className="w-[210px]"
+                      showAgentLabel={false}
+                      className="w-[180px] max-sm:flex-1"
                     />
                   </div>
 
@@ -212,7 +212,7 @@ export default function HomePage() {
                   <Button
                     onClick={handleGenerate}
                     disabled={!userPrompt.trim()}
-                    className="flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-black py-2.5 pr-4 pl-5 font-mono text-base font-normal text-white transition-all hover:scale-[1.02] hover:bg-black/90 hover:shadow-lg active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none"
+                    className="flex w-full shrink-0 items-center justify-center gap-2 rounded-2xl bg-black py-2.5 pr-4 pl-5 font-mono text-base font-normal text-white transition-all hover:scale-[1.02] hover:bg-black/90 hover:shadow-lg active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none sm:w-auto"
                   >
                     <span>Run Arena</span>
                     <ArrowRight className="size-4" />

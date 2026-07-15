@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { getModelById } from '@/lib/config'
 import type { GalleryResponse, GalleryApp, CreateAppRequest, CreateAppResponse, App } from '@/types'
 
 /**
@@ -83,7 +84,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body: CreateAppRequest = await request.json()
-    const { prompt, modelA, modelB, category = '', name } = body
+    const { prompt, model, category = '', name } = body
 
     // Read fingerprint from cookie (set by client-side FingerprintJS)
     const fingerprint = request.cookies.get('browser_fingerprint')?.value || null
@@ -95,9 +96,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!modelA || !modelB) {
+    if (!model || !getModelById(model)) {
       return NextResponse.json(
-        { success: false, error: 'INVALID_MODELS', message: 'Both modelA and modelB are required' },
+        { success: false, error: 'INVALID_MODEL', message: 'A valid model is required' },
         { status: 400 }
       )
     }
@@ -132,8 +133,8 @@ export async function POST(request: NextRequest) {
         user_email: userEmail,
         fingerprint_id: userId ? null : fingerprint || null,
         prompt: prompt.trim(),
-        model_a: modelA,
-        model_b: modelB,
+        model_a: model,
+        model_b: model,
         category: category,
         name: name ? name.slice(0, 100) : null,
       })

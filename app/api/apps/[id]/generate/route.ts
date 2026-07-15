@@ -1,17 +1,10 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import {
-  models,
-  ANONYMOUS_QUOTA,
-  AUTHENTICATED_QUOTA,
-  PAID_QUOTA,
-  getAPIConfig,
-} from '@/lib/config'
-import { getFreeTierDisabled, getAllGenerationDisabled } from '@/lib/dynamic-config'
-import { checkAppOwnerPermission, isPaidUser } from '@/lib/permissions'
-import { getNovitaBalance } from '@/lib/novita'
+import { models, getAPIConfig } from '@/lib/config'
+import { checkAppOwnerPermission } from '@/lib/permissions'
 import * as Sentry from '@sentry/nextjs'
+import { buildGenerationMessages } from '@/lib/generation-prompts'
 
 // Next.js Route Segment Config
 // This is a streaming endpoint, so we need edge-compatible settings
@@ -21,47 +14,6 @@ export const maxDuration = 900
 
 const GENERATION_MAX_TOKENS = 65536
 
-function getClientIP(request: NextRequest): string {
-  const headersList = request.headers
-
-  const forwardedFor = headersList.get('x-forwarded-for')
-  if (forwardedFor) {
-    return forwardedFor.split(',')[0].trim()
-  }
-
-  const realIP = headersList.get('x-real-ip')
-  if (realIP) {
-    return realIP
-  }
-
-  return '127.0.0.1'
-}
-
-function getQuotaLimit(isAuthenticated: boolean, isPaid: boolean): number {
-  if (!isAuthenticated) {
-    return ANONYMOUS_QUOTA
-  }
-  if (isPaid) {
-    return PAID_QUOTA
-  }
-  return AUTHENTICATED_QUOTA
-}
-
-async function incrementQuota(
-  adminClient: Awaited<ReturnType<typeof createAdminClient>>,
-  identifier: string
-) {
-  // Use atomic SQL function to prevent race conditions
-  const { error } = await adminClient.rpc('increment_quota', {
-    iden: identifier,
-  })
-
-  if (error) {
-    console.error('Failed to increment quota:', error)
-    throw new Error(`Failed to increment quota: ${error.message}`)
-  }
-}
-
 /**
  * POST /api/apps/[id]/generate
  * 流式生成 HTML（SSE）- 直接透传 Novita API 的原始 SSE 流
@@ -69,7 +21,7 @@ async function incrementQuota(
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const body = await request.json()
-  const { slot, model: modelIdParam, temperature } = body
+  const { slot, temperature } = body
 
   if (!slot || !['a', 'b'].includes(slot)) {
     return new Response(JSON.stringify({ error: 'Invalid slot parameter. Must be "a" or "b"' }), {
@@ -80,8 +32,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
   const supabase = await createClient()
   const adminClient = await createAdminClient()
-
-  const clientIP = getClientIP(request)
 
   // 获取 App
   const { data: app, error } = await adminClient.from('apps').select('*').eq('id', id).single()
@@ -108,95 +58,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     })
   }
 
-  let quotaLimit: number
-  let novitaBalance: number | null = null
-  let identifier: string
-  let isPaid = false
-
-  if (user) {
-    novitaBalance = await getNovitaBalance()
-    isPaid = await isPaidUser(novitaBalance)
-    quotaLimit = getQuotaLimit(true, isPaid)
-    identifier = user.id
-  } else {
-    quotaLimit = getQuotaLimit(false, false)
-    identifier = clientIP
-  }
-
-  const allGenerationDisabled = await getAllGenerationDisabled()
-  if (allGenerationDisabled) {
-    return new Response(
-      JSON.stringify({
-        error: 'ALL_GENERATION_DISABLED',
-        message:
-          'Due to high demand, our service is temporarily paused. We&apos;ll be back online soon!',
-      }),
-      { status: 403, headers: { 'Content-Type': 'application/json' } }
-    )
-  }
-
-  const freeTierDisabled = await getFreeTierDisabled()
-  if (freeTierDisabled) {
-    if (!isPaid) {
-      const message = user
-        ? 'Due to high demand, free access is temporarily limited. Add balance to get instant access.'
-        : 'Due to high demand, anonymous access is temporarily paused. Log in and add balance to continue.'
-
-      return new Response(JSON.stringify({ error: 'FREE_TIER_DISABLED', message }), {
-        status: 403,
-        headers: { 'Content-Type': 'application/json' },
-      })
-    }
-  }
-
-  const { data: quotaData } = await adminClient
-    .from('generation_quotas')
-    .select('*')
-    .eq('identifier', identifier)
-    .single()
-
-  const usedCount = quotaData?.used_count || 0
-
-  if (usedCount >= quotaLimit) {
-    let error, message
-    if (!user) {
-      error = 'QUOTA_EXCEEDED_T0'
-      message = `You have reached your generation limit (${usedCount}/${quotaLimit}). Log in to continue.`
-    } else if (!isPaid) {
-      error = 'QUOTA_EXCEEDED_T1'
-      message = `You have reached your generation limit (${usedCount}/${quotaLimit}). Add balance or subscribe to get more generations.`
-    } else {
-      error = 'QUOTA_EXCEEDED_T2'
-      message = `You have reached your paid generation limit (${usedCount}/${quotaLimit}). Need more? Contact us to increase your limit.`
-    }
-    return new Response(JSON.stringify({ error, message }), {
-      status: 403,
+  const modelId = app.model_a
+  if (!models.some(model => model.id === modelId)) {
+    return new Response(JSON.stringify({ error: 'The app has an invalid model.' }), {
+      status: 400,
       headers: { 'Content-Type': 'application/json' },
     })
-  }
-
-  let modelId = slot === 'a' ? app.model_a : app.model_b
-
-  // 如果传入了 specific model (id)，验证并使用
-  if (modelIdParam) {
-    const isAllowed = models.some(m => m.id === modelIdParam)
-    if (!isAllowed) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid model. Must be one of the allowed models.' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      )
-    }
-
-    // 如果模型ID发生了变化，更新数据库
-    if (modelId !== modelIdParam) {
-      const updateField = slot === 'a' ? 'model_a' : 'model_b'
-      await adminClient
-        .from('apps')
-        .update({ [updateField]: modelIdParam })
-        .eq('id', id)
-
-      modelId = modelIdParam
-    }
   }
 
   // 创建 AbortController，用于在前端断开连接时取消 Novita API 请求
@@ -222,13 +89,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           ? 2
           : Number(temperature)
 
-  const messages = [
-    {
-      role: 'system',
-      content: `You are an expert web developer. Generate a self-contained HTML file based on the user's prompt. The HTML will run in a sandboxed iframe (allow-scripts, allow-forms). Do not use localStorage, sessionStorage, or cookies.`,
-    },
-    { role: 'user', content: app.prompt },
-  ]
+  const messages = buildGenerationMessages(slot, app.prompt)
 
   const span = Sentry.startInactiveSpan({
     op: 'gen_ai.request',
@@ -276,8 +137,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       headers: { 'Content-Type': 'application/json' },
     })
   }
-
-  incrementQuota(adminClient, identifier)
 
   // Create a TransformStream to intercept and parse SSE data for Sentry
   const responseTexts: string[] = []

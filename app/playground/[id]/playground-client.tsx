@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useId } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/base/button'
+import { ModelSelector } from '@/components/base/model-selector'
 import { Textarea } from '@/components/base/textarea'
 import { Video, ArrowUp, ArrowLeft, Eye, EyeOff, Square, RotateCcw, Share2 } from 'lucide-react'
 import { showToast } from '@/lib/toast'
@@ -16,7 +17,6 @@ import { useScreenRecorder } from '@/hooks/use-screen-recorder'
 import { useAuth } from '@/hooks/use-auth'
 import { Tooltip } from '@base-ui/react/tooltip'
 import { cn } from '@/lib/utils'
-import { calculateTokensAndCost } from '@/lib/pricing'
 import type { App } from '@/types'
 
 interface PlaygroundClientProps {
@@ -30,6 +30,11 @@ export default function PlaygroundClient({ initialApp, appId }: PlaygroundClient
     currentAppId,
     prompt,
     setPrompt,
+    selectedModel,
+    setSelectedModel,
+    agentHarness,
+    setAgentHarness,
+    isConfigurationLocked,
     arenaViewMode,
     setArenaViewMode,
     showInputBar,
@@ -61,7 +66,7 @@ export default function PlaygroundClient({ initialApp, appId }: PlaygroundClient
 
   const hasAutoStartedRef = useRef(false)
   const handleGenerateRef = useRef(handleGenerate)
-  const modelsReady = modelA.selectedModel.id && modelB.selectedModel.id
+  const modelsReady = Boolean(selectedModel.id)
 
   // 更新 handleGenerateRef
   useEffect(() => {
@@ -135,8 +140,8 @@ export default function PlaygroundClient({ initialApp, appId }: PlaygroundClient
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-white">
       <FreeTierBanner />
-      <header className="z-30 flex h-16 shrink-0 items-center justify-between border-b border-[#f3f4f6] bg-white px-4">
-        <div className="flex items-center gap-2">
+      <header className="z-30 flex min-h-16 shrink-0 items-center justify-between gap-2 border-b border-[#f3f4f6] bg-white px-2 py-2 sm:px-4">
+        <div className="flex min-w-0 items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
             <Button
               variant="ghost"
@@ -146,9 +151,17 @@ export default function PlaygroundClient({ initialApp, appId }: PlaygroundClient
               <ArrowLeft className="size-5" />
             </Button>
           </Link>
-          <h1 className="font-sans text-[20px] font-semibold tracking-tight text-black">
-            Arena Playground
+          <h1 className="hidden shrink-0 font-sans text-[20px] font-semibold tracking-normal text-black lg:block">
+            Agent Comparison
           </h1>
+          <ModelSelector
+            selectedModel={selectedModel}
+            onModelChange={setSelectedModel}
+            disabled={isConfigurationLocked}
+            variant="minimal"
+            size="small"
+            className="w-[150px] sm:w-[190px]"
+          />
         </div>
 
         <div className="flex items-center gap-3">
@@ -247,74 +260,46 @@ export default function PlaygroundClient({ initialApp, appId }: PlaygroundClient
       </header>
 
       <main ref={previewContainerRef} className="relative flex w-screen flex-1 overflow-hidden">
-        <div className="flex w-full flex-1">
-          {arenaViewMode !== 'b' &&
-            (() => {
-              // Calculate comparison data for Model A
-              const comparisonData =
-                arenaViewMode === 'split' && modelB.response.completed && modelB.response.tokens
-                  ? {
-                      tokens: modelB.response.outputTokens ?? modelB.response.tokens,
-                      cost: calculateTokensAndCost(
-                        modelB.response.outputTokens ?? modelB.response.tokens,
-                        modelB.selectedModel.id
-                      ).cost,
-                      duration: modelB.response.duration,
-                    }
-                  : undefined
+        <div className="flex w-full flex-1 flex-col md:flex-row">
+          {arenaViewMode !== 'b' ? (
+            <ModelPanel
+              className={arenaViewMode === 'split' ? 'h-1/2 w-full md:h-auto md:w-1/2' : 'flex-1'}
+              selectedModel={selectedModel}
+              profile="direct"
+              agentHarness={agentHarness}
+              onAgentHarnessChange={setAgentHarness}
+              configurationLocked={isConfigurationLocked}
+              response={modelA.response}
+              onResponseChange={modelA.setResponse}
+              viewMode={modelA.viewMode}
+              onViewModeChange={modelA.setViewMode}
+              settings={modelA.settings}
+              onSettingsChange={modelA.setSettings}
+              onRegenerate={handleGenerateModelA}
+              onToggleMaximize={() => setArenaViewMode(arenaViewMode === 'a' ? 'split' : 'a')}
+              showRightBorder={arenaViewMode === 'split'}
+              scrollButtonPosition={arenaViewMode === 'split' ? 'left' : 'right'}
+            />
+          ) : null}
 
-              return (
-                <ModelPanel
-                  className={arenaViewMode === 'split' ? 'w-1/2' : 'flex-1'}
-                  selectedModel={modelA.selectedModel}
-                  onModelChange={modelA.setSelectedModel}
-                  response={modelA.response}
-                  onResponseChange={modelA.setResponse}
-                  viewMode={modelA.viewMode}
-                  onViewModeChange={modelA.setViewMode}
-                  settings={modelA.settings}
-                  onSettingsChange={modelA.setSettings}
-                  onRegenerate={handleGenerateModelA}
-                  onToggleMaximize={() => setArenaViewMode(arenaViewMode === 'a' ? 'split' : 'a')}
-                  showRightBorder={arenaViewMode === 'split'}
-                  scrollButtonPosition={arenaViewMode === 'split' ? 'left' : 'right'}
-                  comparisonData={comparisonData}
-                />
-              )
-            })()}
-
-          {arenaViewMode !== 'a' &&
-            (() => {
-              // Calculate comparison data for Model B
-              const comparisonData =
-                arenaViewMode === 'split' && modelA.response.completed && modelA.response.tokens
-                  ? {
-                      tokens: modelA.response.outputTokens ?? modelA.response.tokens,
-                      cost: calculateTokensAndCost(
-                        modelA.response.outputTokens ?? modelA.response.tokens,
-                        modelA.selectedModel.id
-                      ).cost,
-                      duration: modelA.response.duration,
-                    }
-                  : undefined
-
-              return (
-                <ModelPanel
-                  className={arenaViewMode === 'split' ? 'w-1/2' : 'flex-1'}
-                  selectedModel={modelB.selectedModel}
-                  onModelChange={modelB.setSelectedModel}
-                  response={modelB.response}
-                  onResponseChange={modelB.setResponse}
-                  viewMode={modelB.viewMode}
-                  onViewModeChange={modelB.setViewMode}
-                  settings={modelB.settings}
-                  onSettingsChange={modelB.setSettings}
-                  onRegenerate={handleGenerateModelB}
-                  onToggleMaximize={() => setArenaViewMode(arenaViewMode === 'b' ? 'split' : 'b')}
-                  comparisonData={comparisonData}
-                />
-              )
-            })()}
+          {arenaViewMode !== 'a' ? (
+            <ModelPanel
+              className={arenaViewMode === 'split' ? 'h-1/2 w-full md:h-auto md:w-1/2' : 'flex-1'}
+              selectedModel={selectedModel}
+              profile="agent"
+              agentHarness={agentHarness}
+              onAgentHarnessChange={setAgentHarness}
+              configurationLocked={isConfigurationLocked}
+              response={modelB.response}
+              onResponseChange={modelB.setResponse}
+              viewMode={modelB.viewMode}
+              onViewModeChange={modelB.setViewMode}
+              settings={modelB.settings}
+              onSettingsChange={modelB.setSettings}
+              onRegenerate={handleGenerateModelB}
+              onToggleMaximize={() => setArenaViewMode(arenaViewMode === 'b' ? 'split' : 'b')}
+            />
+          ) : null}
         </div>
 
         {showInputBar && (
@@ -325,11 +310,11 @@ export default function PlaygroundClient({ initialApp, appId }: PlaygroundClient
                   <Textarea
                     placeholder="Describe your app... (Press Enter to send)"
                     className="scrollbar-none min-h-[48px] w-full resize-none border-0 bg-transparent p-0 font-sans text-[16px] leading-[24px] font-normal text-[#292827] placeholder:text-[#9e9c98] focus-visible:ring-0"
-                    style={{ 
-                      scrollbarWidth: 'none', 
-                      msOverflowStyle: 'none', 
+                    style={{
+                      scrollbarWidth: 'none',
+                      msOverflowStyle: 'none',
                       maxHeight: '96px',
-                      fieldSizing: 'content'
+                      fieldSizing: 'content',
                     }}
                     value={prompt}
                     onChange={e => setPrompt(e.target.value)}

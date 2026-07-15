@@ -14,8 +14,8 @@ interface PlaygroundPageProps {
 
 // Static metadata - no dynamic queries for performance
 export const metadata: Metadata = {
-  title: 'Playground',
-  description: 'Compare AI models side-by-side in real-time visual generation.',
+  title: 'Agent Comparison',
+  description: 'Compare direct and agent-style generation using the same AI model.',
   robots: {
     index: false, // Don't index playground pages
     follow: false,

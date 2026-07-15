@@ -63,8 +63,7 @@ export interface Like {
 // API types
 export interface CreateAppRequest {
   prompt: string
-  modelA: string
-  modelB: string
+  model: string
   category?: string
   name?: string
 }
