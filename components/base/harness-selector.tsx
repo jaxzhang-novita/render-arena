@@ -44,7 +44,7 @@ export function HarnessSelector({
         />
         {showAgentLabel ? (
           <>
-            <span className="shrink-0 font-medium">Agent</span>
+            <span className="shrink-0 font-medium">LLM Agent</span>
             <span className="text-[#9e9c98]">·</span>
           </>
         ) : null}

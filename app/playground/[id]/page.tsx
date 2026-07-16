@@ -14,8 +14,8 @@ interface PlaygroundPageProps {
 
 // Static metadata - no dynamic queries for performance
 export const metadata: Metadata = {
-  title: 'Agent Comparison',
-  description: 'Compare direct and agent-style generation using the same AI model.',
+  title: 'LLM API vs LLM Agent',
+  description: 'Compare LLM API and LLM Agent generation using the same AI model.',
   robots: {
     index: false, // Don't index playground pages
     follow: false,
