@@ -1,7 +1,7 @@
 'use client'
 
 import { Menu } from '@base-ui/react/menu'
-import { ChevronDown } from 'lucide-react'
+import { Bot, ChevronDown } from 'lucide-react'
 import Image from 'next/image'
 import { agentHarnesses, type AgentHarness } from '@/lib/agent-comparison'
 import { cn } from '@/lib/utils'
@@ -11,7 +11,6 @@ interface HarnessSelectorProps {
   onHarnessChange: (harness: AgentHarness) => void
   disabled?: boolean
   size?: 'small' | 'medium'
-  showAgentLabel?: boolean
   className?: string
 }
 
@@ -20,7 +19,6 @@ export function HarnessSelector({
   onHarnessChange,
   disabled = false,
   size = 'medium',
-  showAgentLabel = true,
   className,
 }: HarnessSelectorProps) {
   return (
@@ -35,19 +33,17 @@ export function HarnessSelector({
           className
         )}
       >
-        <Image
-          src={selectedHarness.icon}
-          alt=""
-          width={16}
-          height={16}
-          className="size-4 shrink-0 rounded-sm"
-        />
-        {showAgentLabel ? (
-          <>
-            <span className="shrink-0 font-medium">LLM Agent</span>
-            <span className="text-[#9e9c98]">·</span>
-          </>
-        ) : null}
+        {selectedHarness.icon ? (
+          <Image
+            src={selectedHarness.icon}
+            alt=""
+            width={16}
+            height={16}
+            className="size-4 shrink-0 rounded-sm"
+          />
+        ) : (
+          <Bot className="size-4 shrink-0 text-[#00a63e]" />
+        )}
         <span className="min-w-0 flex-1 truncate text-left">{selectedHarness.name}</span>
         <ChevronDown className="size-4 shrink-0 text-[#9e9c98]" />
       </Menu.Trigger>
@@ -65,13 +61,17 @@ export function HarnessSelector({
                     : 'hover:bg-[#f5f5f5] focus:bg-[#f5f5f5]'
                 )}
               >
-                <Image
-                  src={harness.icon}
-                  alt=""
-                  width={16}
-                  height={16}
-                  className="size-4 shrink-0 rounded-sm"
-                />
+                {harness.icon ? (
+                  <Image
+                    src={harness.icon}
+                    alt=""
+                    width={16}
+                    height={16}
+                    className="size-4 shrink-0 rounded-sm"
+                  />
+                ) : (
+                  <Bot className="size-4 shrink-0" />
+                )}
                 {harness.name}
               </Menu.Item>
             ))}

@@ -120,7 +120,6 @@ export function ModelPanel({
                 selectedHarness={agentHarness}
                 onHarnessChange={onAgentHarnessChange}
                 disabled={configurationLocked}
-                showAgentLabel
                 className="w-[180px] max-w-full"
               />
             )}

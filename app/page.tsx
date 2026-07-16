@@ -203,7 +203,6 @@ export default function HomePage() {
                       selectedHarness={selectedHarness}
                       onHarnessChange={setSelectedHarness}
                       size="small"
-                      showAgentLabel
                       className="w-[180px] max-sm:flex-1"
                     />
                   </div>

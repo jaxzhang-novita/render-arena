@@ -6,7 +6,7 @@ Novita streaming generation API:
 - **Direct** uses a deliberately constrained baseline prompt.
 - **Agent** uses a more complete agent-style product and frontend prompt.
 
-The Claude Code, Codex, and OpenCode harness choices are presentation labels only. They do not
+The Claude Code, Codex, OpenCode, and LLM Agent harness choices are presentation labels only. They do not
 invoke those products, change the system prompt, or run an agent runtime. This demo must not be
 presented as benchmark evidence for any named harness or for agents in general.
 
