@@ -120,6 +120,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       temperature: finalTemperature,
       max_tokens: GENERATION_MAX_TOKENS,
       stream: true,
+      ...(slot === 'a' ? { enable_thinking: false } : {}),
       ...(modelId === 'zai-org/glm-5.2' ? { thinking: { type: 'disabled' } } : {}),
       // separate_reasoning: true,
     }),
