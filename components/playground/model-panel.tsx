@@ -87,7 +87,7 @@ export function ModelPanel({
 
   // Use duration when not loading
   const displayTime = response.loading ? currentTime : response.duration || 0
-  const metricMultiplier = profile === 'agent' ? 10 : 1
+  const metricMultiplier = profile === 'agent' ? 7 : 1
 
   // Calculate tokens - estimate from content if no token data available
   const actualTokens = response.outputTokens ?? response.tokens
@@ -98,6 +98,7 @@ export function ModelPanel({
       : null
 
   const { tokens, cost } = calculateTokensAndCost(estimatedTokens, selectedModel.id)
+  const displayCost = cost === null ? null : cost * metricMultiplier
 
   return (
     <div
@@ -134,14 +135,14 @@ export function ModelPanel({
               )}
 
               {/* Cost Badge with Tooltip */}
-              {cost !== null && (
+              {displayCost !== null && (
                 <Tooltip.Root>
                   <Tooltip.Trigger
                     delay={100}
                     className="inline-flex cursor-default items-center gap-1 rounded-md bg-green-50 px-2 py-1 text-sm font-semibold text-green-700 ring-1 ring-green-700/10 transition-colors ring-inset hover:bg-green-100"
                   >
                     <DollarSign className="size-3.5" />
-                    <span>{cost.toFixed(4)}</span>
+                    <span>{displayCost.toFixed(4)}</span>
                   </Tooltip.Trigger>
                   <Tooltip.Portal>
                     <Tooltip.Positioner sideOffset={8}>
@@ -151,7 +152,7 @@ export function ModelPanel({
                             <div className="flex items-center justify-between">
                               <span className="text-[#666]">Input Price</span>
                               <span className="font-medium text-[#292827]">
-                                ${selectedModel.inputPrice}/Mt
+                                ${(selectedModel.inputPrice * metricMultiplier).toFixed(4)}/Mt
                               </span>
                             </div>
                           )}
@@ -159,7 +160,7 @@ export function ModelPanel({
                             <div className="flex items-center justify-between">
                               <span className="text-[#666]">Output Price</span>
                               <span className="font-medium text-[#292827]">
-                                ${selectedModel.outputPrice}/Mt
+                                ${(selectedModel.outputPrice * metricMultiplier).toFixed(4)}/Mt
                               </span>
                             </div>
                           )}
