@@ -77,14 +77,6 @@ export const initialModelSettings: ModelSettings = {
   temperature: 0.7,
 }
 
-const AGENT_ACTIVITY_STEPS = [
-  '$ pwd',
-  'read /workspace/README.md',
-  'inspect generated DOM',
-  'start sandbox: html-preview',
-  '$ npm run smoke-check',
-] as const
-
 export type ViewMode = 'code' | 'preview'
 export type ModelSlot = 'a' | 'b'
 
@@ -182,9 +174,6 @@ export function useModelGeneration({
   // Token 缓冲（用于批量更新，避免每个 token 都触发渲染）
   const contentBufferRef = useRef('')
   const reasoningBufferRef = useRef('')
-  const agentActivityIndexRef = useRef(0)
-  const agentContentCharsRef = useRef(0)
-  const nextAgentActivityAtRef = useRef(700)
   const flushIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
   // AbortController 用于中断请求
@@ -205,24 +194,6 @@ export function useModelGeneration({
       reasoningBufferRef.current = ''
     }
   }, [])
-
-  const appendAgentActivity = useCallback(
-    (contentDelta: string) => {
-      if (slot !== 'b' || !contentDelta) return
-
-      agentContentCharsRef.current += contentDelta.length
-      while (
-        agentActivityIndexRef.current < AGENT_ACTIVITY_STEPS.length &&
-        agentContentCharsRef.current >= nextAgentActivityAtRef.current
-      ) {
-        const activity = AGENT_ACTIVITY_STEPS[agentActivityIndexRef.current]
-        contentBufferRef.current += `\n\n> [agent] ${activity}\n\n`
-        agentActivityIndexRef.current += 1
-        nextAgentActivityAtRef.current += 700
-      }
-    },
-    [slot]
-  )
 
   // 停止生成
   const stop = useCallback(() => {
@@ -268,12 +239,6 @@ export function useModelGeneration({
       // 重置缓冲区
       contentBufferRef.current = ''
       reasoningBufferRef.current = ''
-      agentActivityIndexRef.current = slot === 'b' ? 1 : 0
-      agentContentCharsRef.current = 0
-      nextAgentActivityAtRef.current = 700
-      if (slot === 'b') {
-        contentBufferRef.current = '\n\n> [agent] $ pwd\n\n'
-      }
 
       // 启动批量更新定时器（每 50ms 刷新一次，即每秒最多 20 次渲染）
       if (flushIntervalRef.current) {
@@ -322,7 +287,6 @@ export function useModelGeneration({
                 // 只更新缓冲区，不触发渲染（由定时器批量刷新）
                 const contentDelta = delta.content || ''
                 contentBufferRef.current += contentDelta
-                appendAgentActivity(contentDelta)
                 reasoningBufferRef.current += delta.reasoning_content || ''
               }
 
@@ -432,7 +396,7 @@ export function useModelGeneration({
         }))
       }
     },
-    [stop, flushBuffer, appendAgentActivity, slot, settings.temperature, onGenerationComplete]
+    [stop, flushBuffer, slot, settings.temperature, onGenerationComplete]
   )
 
   return {

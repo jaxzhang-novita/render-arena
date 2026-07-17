@@ -1,13 +1,12 @@
 export function extractHTMLFromMarkdown(markdown: string): string | null {
-  const withoutAgentActivity = markdown.replace(/^> \[agent\] .*$/gim, '')
   const htmlCodeBlockRegex = /```html\s*([\s\S]*?)```/gi
-  const matches = [...withoutAgentActivity.matchAll(htmlCodeBlockRegex)]
+  const matches = [...markdown.matchAll(htmlCodeBlockRegex)]
 
   if (matches.length > 0) {
     return matches[matches.length - 1][1].trim()
   }
 
-  const content = withoutAgentActivity.trim()
+  const content = markdown.trim()
   const documentStart = content.search(/<!doctype html|<html[\s>]/i)
   if (documentStart === -1) {
     return null

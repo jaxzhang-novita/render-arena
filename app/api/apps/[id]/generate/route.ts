@@ -12,7 +12,8 @@ export const runtime = 'nodejs' // Use Node.js runtime for Supabase and streamin
 export const dynamic = 'force-dynamic' // Always fresh data, no caching for generation requests
 export const maxDuration = 900
 
-const GENERATION_MAX_TOKENS = 65536
+// Keep the demo responsive when a reasoning model spends tokens before emitting HTML.
+const GENERATION_MAX_TOKENS = 16384
 
 /**
  * POST /api/apps/[id]/generate
