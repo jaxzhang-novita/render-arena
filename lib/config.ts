@@ -148,6 +148,16 @@ const allModels: LLMModel[] = [
     outputPrice: 3.2,
   },
   {
+    id: 'deepseek/deepseek-v4-flash',
+    name: 'DeepSeek V4 Flash',
+    icon: '/logo/models/deepseek-color.svg',
+    color: '#4D6BFE',
+    group: 'DeepSeek',
+    socialTag: 'DeepSeek',
+    inputPrice: 0.14,
+    outputPrice: 0.28,
+  },
+  {
     id: 'deepseek/deepseek-v3.2',
     name: 'DeepSeek V3.2',
     icon: '/logo/models/deepseek-color.svg',
@@ -651,6 +661,7 @@ export const modelGroups: ModelGroup[] = modelGroupConfigs.map(config => ({
 // Export all models for backward compatibility
 export const models: LLMModel[] = allModels
 
+export const directComparisonModelId = 'deepseek/deepseek-v4-flash'
 export const defaultModelAId = 'tencent/hy3'
 export const defaultModelBId = 'pa/gpt-5.5'
 

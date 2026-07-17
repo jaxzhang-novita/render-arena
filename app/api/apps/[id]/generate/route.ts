@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { models, getAPIConfig } from '@/lib/config'
+import { directComparisonModelId, models, getAPIConfig } from '@/lib/config'
 import { checkAppOwnerPermission } from '@/lib/permissions'
 import * as Sentry from '@sentry/nextjs'
 import { buildGenerationMessages } from '@/lib/generation-prompts'
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     })
   }
 
-  const modelId = app.model_a
+  const modelId = slot === 'a' ? directComparisonModelId : app.model_b
   if (!models.some(model => model.id === modelId)) {
     return new Response(JSON.stringify({ error: 'The app has an invalid model.' }), {
       status: 400,

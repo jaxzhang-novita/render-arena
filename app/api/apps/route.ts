@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { getModelById } from '@/lib/config'
+import { directComparisonModelId, getModelById } from '@/lib/config'
 import type { GalleryResponse, GalleryApp, CreateAppRequest, CreateAppResponse, App } from '@/types'
 
 /**
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
         user_email: userEmail,
         fingerprint_id: userId ? null : fingerprint || null,
         prompt: prompt.trim(),
-        model_a: model,
+        model_a: directComparisonModelId,
         model_b: model,
         category: category,
         name: name ? name.slice(0, 100) : null,

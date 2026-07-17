@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useModelGeneration } from './use-model-generation'
 import type { App } from '@/types'
-import { defaultModelAId, type LLMModel } from '@/lib/config'
+import { defaultModelAId, directComparisonModelId, type LLMModel } from '@/lib/config'
 import { getAgentHarness, type AgentHarness } from '@/lib/agent-comparison'
 import { showToast } from '@/lib/toast'
 import { trackGenerationStarted } from '@/lib/analytics'
@@ -24,9 +24,9 @@ interface UseArenaPlaygroundReturn {
   prompt: string
   /** 设置提示词 */
   setPrompt: (prompt: string) => void
-  /** 两侧共享的模型 */
+  /** Agent 侧由页面选择的模型 */
   selectedModel: LLMModel
-  /** 同步设置两侧模型 */
+  /** 设置 Agent 侧模型 */
   setSelectedModel: (model: LLMModel) => void
   /** Agent 侧展示的 harness */
   agentHarness: AgentHarness
@@ -90,37 +90,35 @@ export function useArenaPlayground({
   const [arenaViewMode, setArenaViewMode] = useState<ArenaViewMode>('split')
   const [showInputBar, setShowInputBar] = useState(true)
 
-  const initialModelId = urlModel || initialApp?.model_a
+  const initialAgentModelId = urlModel || initialApp?.model_b
 
   // Direct profile
   const modelA = useModelGeneration({
     slot: 'a',
-    initialModelId,
-    defaultModelId: defaultModelAId,
+    initialModelId: directComparisonModelId,
+    defaultModelId: directComparisonModelId,
     initialHtml: initialApp?.html_content_a || undefined,
     initialDuration: initialApp?.duration_a || undefined,
     initialTokens: initialApp?.tokens_a || undefined,
   })
 
-  // Agent profile uses the same model
+  // Agent profile uses the model selected in the page header
   const modelB = useModelGeneration({
     slot: 'b',
-    initialModelId,
+    initialModelId: initialAgentModelId,
     defaultModelId: defaultModelAId,
     initialHtml: initialApp?.html_content_b || undefined,
     initialDuration: initialApp?.duration_b || undefined,
     initialTokens: initialApp?.tokens_b || undefined,
   })
 
-  const selectedModel = modelA.selectedModel
-  const setModelA = modelA.setSelectedModel
+  const selectedModel = modelB.selectedModel
   const setModelB = modelB.setSelectedModel
   const setSelectedModel = useCallback(
     (model: LLMModel) => {
-      setModelA(model)
       setModelB(model)
     },
-    [setModelA, setModelB]
+    [setModelB]
   )
 
   // 停止所有生成

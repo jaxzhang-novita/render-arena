@@ -264,7 +264,7 @@ export default function PlaygroundClient({ initialApp, appId }: PlaygroundClient
           {arenaViewMode !== 'b' ? (
             <ModelPanel
               className={arenaViewMode === 'split' ? 'h-1/2 w-full md:h-auto md:w-1/2' : 'flex-1'}
-              selectedModel={selectedModel}
+              selectedModel={modelA.selectedModel}
               profile="direct"
               agentHarness={agentHarness}
               onAgentHarnessChange={setAgentHarness}
