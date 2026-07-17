@@ -118,7 +118,7 @@ export function ModelPanel({
             {profile === 'direct' ? (
               <div className="inline-flex h-8 items-center gap-2 px-1 text-[15px] font-semibold text-[#292827]">
                 <MessageSquareText className="size-4 text-[#6b7280]" />
-                LLM API
+                Direct API
               </div>
             ) : (
               <HarnessSelector

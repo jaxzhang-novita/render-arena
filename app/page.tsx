@@ -143,13 +143,13 @@ export default function HomePage() {
             <div className="inline-flex items-center gap-3 rounded-full border border-[#b9f8cf] bg-[#f0fdf4] px-3 py-1">
               <div className="size-2 rounded-full bg-[#00c950]" />
               <span className="font-['Inter',sans-serif] text-xs font-medium text-[#00a63e]">
-                RenderArena · LLM API vs LLM Agent
+                RenderArena · Direct API vs Agent Harness
               </span>
             </div>
 
             {/* Heading */}
             <h1 className="max-w-[820px] font-sans text-4xl leading-tight font-semibold tracking-normal text-[#292827] md:text-[58px] md:leading-[64px]">
-              One Model. LLM API vs LLM Agent.
+              One Model. Direct API vs Agent Harness.
             </h1>
 
             {/* Subtitle */}
@@ -196,7 +196,7 @@ export default function HomePage() {
                     <div className="hidden h-4 w-px bg-black/10 sm:block" />
                     <div className="inline-flex h-8 items-center gap-2 rounded-lg border border-[#e7e6e2] bg-[#f7f7f5] px-3 text-[14px] font-medium text-[#4f4e4a]">
                       <MessageSquareText className="size-4" />
-                      LLM API
+                      Direct API
                     </div>
                     <span className="px-0.5 text-xs font-medium text-[#9e9c98]">VS</span>
                     <HarnessSelector

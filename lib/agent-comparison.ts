@@ -2,7 +2,7 @@ export const agentHarnesses = [
   { id: 'claude-code', name: 'Claude Code', icon: '/logo/models/claude-color.svg' },
   { id: 'codex', name: 'Codex', icon: '/logo/models/openai.svg' },
   { id: 'opencode', name: 'OpenCode', icon: '/logo/harnesses/opencode.svg' },
-  { id: 'llm-agent', name: 'LLM Agent', icon: undefined },
+  { id: 'llm-agent', name: 'Agent Harness', icon: undefined },
 ] as const
 
 type AgentHarnessId = (typeof agentHarnesses)[number]['id']

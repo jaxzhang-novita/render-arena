@@ -152,7 +152,7 @@ export default function PlaygroundClient({ initialApp, appId }: PlaygroundClient
             </Button>
           </Link>
           <h1 className="hidden shrink-0 font-sans text-[20px] font-semibold tracking-normal text-black lg:block">
-            LLM API vs LLM Agent
+            Direct API vs Agent Harness
           </h1>
           <ModelSelector
             selectedModel={selectedModel}
