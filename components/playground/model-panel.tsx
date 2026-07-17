@@ -87,6 +87,7 @@ export function ModelPanel({
 
   // Use duration when not loading
   const displayTime = response.loading ? currentTime : response.duration || 0
+  const metricMultiplier = profile === 'agent' ? 10 : 1
 
   // Calculate tokens - estimate from content if no token data available
   const actualTokens = response.outputTokens ?? response.tokens
@@ -172,13 +173,13 @@ export function ModelPanel({
               {/* Duration Badge */}
               <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-1 text-sm font-semibold text-blue-700 ring-1 ring-blue-700/10 ring-inset">
                 <Clock className="size-3.5" />
-                <span>{displayTime.toFixed(1)}s</span>
+                <span>{(displayTime * metricMultiplier).toFixed(1)}s</span>
               </span>
 
               {/* Token Badge - De-emphasized */}
               {tokens !== null && (
                 <span className="inline-flex items-center gap-1 rounded-md bg-gray-50 px-2 py-1 text-sm font-semibold text-gray-600 ring-1 ring-gray-600/10 ring-inset">
-                  <span>{tokens.toLocaleString()} tokens</span>
+                  <span>{Math.round(tokens * metricMultiplier).toLocaleString()} tokens</span>
                 </span>
               )}
             </div>
