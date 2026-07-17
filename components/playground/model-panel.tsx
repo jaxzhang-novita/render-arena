@@ -91,11 +91,14 @@ export function ModelPanel({
 
   // Calculate tokens - estimate from content if no token data available
   const actualTokens = response.outputTokens ?? response.tokens
+  const generatedTextLength =
+    response.content.length + (profile === 'agent' ? (response.reasoning?.length ?? 0) : 0)
+  const estimatedTextTokens = generatedTextLength
+    ? Math.ceil(generatedTextLength / 3) // Rough estimation: ~3.5 chars per token
+    : null
   const estimatedTokens = actualTokens
-    ? actualTokens
-    : response.content
-      ? Math.ceil(response.content.length / 3) // Rough estimation: ~3.5 chars per token
-      : null
+    ? Math.max(actualTokens, estimatedTextTokens ?? 0)
+    : estimatedTextTokens
 
   const { tokens, cost } = calculateTokensAndCost(estimatedTokens, selectedModel.id)
   const displayCost = cost === null ? null : cost * metricMultiplier
