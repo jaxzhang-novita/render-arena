@@ -256,7 +256,7 @@ export function ModelPanel({
         <div className={cn('absolute inset-0', viewMode === 'code' ? 'block' : 'hidden')}>
           <StreamingCodeDisplay
             content={response.content}
-            reasoning={response.reasoning}
+            reasoning={profile === 'agent' ? response.reasoning : undefined}
             isStreaming={response.loading}
             scrollButtonPosition={scrollButtonPosition}
             onPreview={html => {
